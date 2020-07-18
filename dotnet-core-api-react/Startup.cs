@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using dotnet_core_api_react.Extensions;
 
 namespace dotnet_core_api_react
 {
@@ -55,6 +56,7 @@ namespace dotnet_core_api_react
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+            app.UseApiForward();
 
             app.UseEndpoints(endpoints =>
             {
@@ -83,8 +85,8 @@ namespace dotnet_core_api_react
             services.AddDbContext<CoreContext>(options =>
             {
                 //options.UseInMemoryDatabase("TodoList");
-                options.UseSqlServer(configuration.GetConnectionString("db"));
-                System.Console.WriteLine($"connectionString:{configuration.GetConnectionString("db")}");
+                options.UseSqlServer(configuration.GetConnectionString("coreDb"));
+                System.Console.WriteLine($"connectionString:{configuration.GetConnectionString("coreDb")}");
                 options.UseLoggerFactory(loggerFactory);
             });
             return services;
