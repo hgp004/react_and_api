@@ -44,3 +44,5 @@ namespace dotnet_core_api_react.Extensions
 
     }
 }
+
+//about lambda expression: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions
