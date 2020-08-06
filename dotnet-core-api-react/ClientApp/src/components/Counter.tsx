@@ -28,7 +28,16 @@ class Counter extends React.PureComponent<CounterProps> {
         );
     }
 };
-
+function mapStateToProps(store: any){
+    return {
+        counterReducer: store.counterReducer
+    }
+}
+function mapActionToProps(actionCreators: any) {
+    return {
+        getCounter: actionCreators
+    }
+}
 export default connect(
     (state: ApplicationState) => state.counter,
     CounterStore.actionCreators
