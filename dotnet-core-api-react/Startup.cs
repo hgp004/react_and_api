@@ -20,6 +20,9 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System;
+using System.Threading.Tasks;
+using System.Diagnostics.Tracing;
 
 namespace dotnet_core_api_react
 {
@@ -54,7 +57,7 @@ namespace dotnet_core_api_react
             {
                 options.ClientId = Configuration["GitHub:ClientId"];
                 options.ClientSecret = Configuration["GitHub:ClientSecret"];
-                options.CallbackPath = new PathString("/github-oauth");
+                options.CallbackPath = new PathString("/aa");
                 options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
                 options.TokenEndpoint = "https://github.com/login/oauth/access_token";
                 options.UserInformationEndpoint = "https://api.github.com/user";
@@ -64,7 +67,8 @@ namespace dotnet_core_api_react
                 options.ClaimActions.MapJsonKey("urn:github:login", "login");
                 options.ClaimActions.MapJsonKey("urn:github:url", "html_url");
                 options.ClaimActions.MapJsonKey("urn:github:avatar", "avatar_url");
-                options.Events = new OAuthEvents
+                options.ForwardAuthenticate = "GitHub";
+                var events = new OAuthEvents
                 {
                     OnCreatingTicket = async context =>
                     {
@@ -77,6 +81,27 @@ namespace dotnet_core_api_react
                         context.RunClaimActions(json.RootElement);
                     }
                 };
+                events.OnAccessDenied += async context =>
+                {
+                    Console.WriteLine("OnAccessDenied");
+                    await Task.CompletedTask;
+                };
+                events.OnRedirectToAuthorizationEndpoint += async context =>
+                {
+                    Console.WriteLine("OnRedirectToAuthorizationEndpoint");
+                    await Task.CompletedTask;
+                };
+                events.OnRemoteFailure += async context =>
+                {
+                    Console.WriteLine("OnRemoteFailure");
+                    await Task.CompletedTask;
+                };
+                events.OnTicketReceived += async context =>
+                {
+                    Console.WriteLine("OnRemoteFailure");
+                    await Task.CompletedTask;
+                };
+                options.Events = events;
             });
             ;
         }
@@ -100,7 +125,7 @@ namespace dotnet_core_api_react
             app.UseSpaStaticFiles();
 
             app.UseRouting();
-            app.UseApiForward();
+            //app.UseApiForward();
 
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

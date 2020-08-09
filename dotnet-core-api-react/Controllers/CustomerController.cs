@@ -22,7 +22,8 @@ namespace dotnet_core_api_react.Controllers
         }
         public List<Customer> Get()
         {
-            return utils.GetCustomers();
-        }       
+            return new List<Customer>() { new Customer { DateOfBirth = DateTime.Now, ID = 1, Name = User.Identity.Name } };
+            //return utils.GetCustomers();
+        }
     }
 }

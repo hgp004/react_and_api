@@ -8,6 +8,7 @@ export interface WeatherForecastsState {
     isLoading: boolean;
     startDateIndex?: number;
     forecasts: WeatherForecast[];
+    customer: any[];
 }
 
 export interface WeatherForecast {
@@ -31,10 +32,17 @@ interface ReceiveWeatherForecastsAction {
     startDateIndex: number;
     forecasts: WeatherForecast[];
 }
+interface ReceiveCustomerAction {
+    type: 'RECEIVE_CUSTOMER',
+    customer: any
+}
+interface RequestCustomerAction {
+    type: "REQUEST_CUSTOMER"
+}
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RequestWeatherForecastsAction | ReceiveWeatherForecastsAction;
+type KnownAction = RequestWeatherForecastsAction | ReceiveWeatherForecastsAction | ReceiveCustomerAction | RequestCustomerAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -53,13 +61,29 @@ export const actionCreators = {
 
             dispatch({ type: 'REQUEST_WEATHER_FORECASTS', startDateIndex: startDateIndex });
         }
+    },
+    requestCustomer: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        fetch(`api/Customer`)
+            .then(response => {
+                console.log("Customer response", response)
+                return response.json() as Promise<any>
+            })
+            .then(data => {
+                dispatch({ type: 'RECEIVE_CUSTOMER', customer: data });
+            })
+            .catch(e => {
+                console.log('catch e', e)
+            })
+            ;
+
+        dispatch({ type: 'REQUEST_CUSTOMER' });
     }
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: WeatherForecastsState = { forecasts: [], isLoading: false };
+const unloadedState: WeatherForecastsState = { forecasts: [], isLoading: false, customer: [] };
 
 export const reducer: Reducer<WeatherForecastsState> = (state: WeatherForecastsState | undefined, incomingAction: Action): WeatherForecastsState => {
     if (state === undefined) {
@@ -72,7 +96,8 @@ export const reducer: Reducer<WeatherForecastsState> = (state: WeatherForecastsS
             return {
                 startDateIndex: action.startDateIndex,
                 forecasts: state.forecasts,
-                isLoading: true
+                isLoading: true,
+                customer: []
             };
         case 'RECEIVE_WEATHER_FORECASTS':
             // Only accept the incoming data if it matches the most recent request. This ensures we correctly
@@ -81,10 +106,18 @@ export const reducer: Reducer<WeatherForecastsState> = (state: WeatherForecastsS
                 return {
                     startDateIndex: action.startDateIndex,
                     forecasts: action.forecasts,
-                    isLoading: false
+                    isLoading: false,
+                    customer: []
                 };
-            }
+            };
+
             break;
+        case 'RECEIVE_CUSTOMER':
+            return {
+                ...state,
+                customer: action.customer
+            };
+
     }
 
     return state;

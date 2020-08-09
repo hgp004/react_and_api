@@ -9,8 +9,9 @@ import './custom.css'
 
 export default () => (
     <Layout>
-        <Route exact path='/' component={Home} />
+        <Route exact path='/home' component={Home} />
         <Route path='/counter' component={Counter} />
         <Route path='/fetch-data/:startDateIndex?' component={FetchData} />
+        <Route path='/:startDateIndex?' component={FetchData} />
     </Layout>
 );
