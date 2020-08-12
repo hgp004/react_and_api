@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_core_api_react.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase
@@ -20,10 +19,17 @@ namespace dotnet_core_api_react.Controllers
         {
             this.utils = utils;
         }
+
+        [Authorize]
         public List<Customer> Get()
         {
             return new List<Customer>() { new Customer { DateOfBirth = DateTime.Now, ID = 1, Name = User.Identity.Name } };
             //return utils.GetCustomers();
+        }
+        [HttpGet("login")]
+        public ActionResult Login()
+        {
+            return Challenge("GitHub");
         }
     }
 }

@@ -45,19 +45,25 @@ namespace dotnet_core_api_react
             {
                 configuration.RootPath = "ClientApp/build";
             });
+            services.AddScoped<ChallengeSchemeHanlder>();
             services.AddDb(Configuration).AddControllerUtils().AddRepository();
 			//https://developer.okta.com/blog/2017/06/21/what-the-heck-is-oauth#oauth-actors
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = "GitHub";
+                options.DefaultChallengeScheme = "defaultChallengeS";
+                //options.DefaultChallengeScheme = "GitHub";
             })
             .AddCookie()
+            .AddScheme<ChallengeSchemeHanlderOptions, ChallengeSchemeHanlder>("defaultChallengeS", options => { 
+                
+
+            })
             .AddOAuth("GitHub", options =>
             {
                 options.ClientId = Configuration["GitHub:ClientId"];
                 options.ClientSecret = Configuration["GitHub:ClientSecret"];
-                options.CallbackPath = new PathString("/aa");
+                options.CallbackPath = new PathString("/home");
                 options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
                 options.TokenEndpoint = "https://github.com/login/oauth/access_token";
                 options.UserInformationEndpoint = "https://api.github.com/user";
@@ -67,7 +73,7 @@ namespace dotnet_core_api_react
                 options.ClaimActions.MapJsonKey("urn:github:login", "login");
                 options.ClaimActions.MapJsonKey("urn:github:url", "html_url");
                 options.ClaimActions.MapJsonKey("urn:github:avatar", "avatar_url");
-                options.ForwardAuthenticate = "GitHub";
+                //options.ForwardAuthenticate = "GitHub";
                 var events = new OAuthEvents
                 {
                     OnCreatingTicket = async context =>
@@ -80,26 +86,6 @@ namespace dotnet_core_api_react
                         var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
                         context.RunClaimActions(json.RootElement);
                     }
-                };
-                events.OnAccessDenied += async context =>
-                {
-                    Console.WriteLine("OnAccessDenied");
-                    await Task.CompletedTask;
-                };
-                events.OnRedirectToAuthorizationEndpoint += async context =>
-                {
-                    Console.WriteLine("OnRedirectToAuthorizationEndpoint");
-                    await Task.CompletedTask;
-                };
-                events.OnRemoteFailure += async context =>
-                {
-                    Console.WriteLine("OnRemoteFailure");
-                    await Task.CompletedTask;
-                };
-                events.OnTicketReceived += async context =>
-                {
-                    Console.WriteLine("OnRemoteFailure");
-                    await Task.CompletedTask;
                 };
                 options.Events = events;
             });

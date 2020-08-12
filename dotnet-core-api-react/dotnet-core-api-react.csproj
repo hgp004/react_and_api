@@ -34,10 +34,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\components\Login.tsx" />
     <None Remove="ClientApp\src\service\apiClient.ts" />
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\components\Login.tsx" />
     <TypeScriptCompile Include="ClientApp\src\service\apiClient.ts" />
   </ItemGroup>
 

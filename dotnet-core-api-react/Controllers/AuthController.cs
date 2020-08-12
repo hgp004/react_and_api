@@ -11,10 +11,15 @@ namespace dotnet_core_api_react.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        [HttpGet("github-oauth111")]
+        [HttpGet("github-oauth")]
         public ActionResult Get()
         {
             return Ok("success");
+        }
+        [HttpGet("login")]
+        public ActionResult Login()
+        {
+            return Challenge("GitHub");
         }
     }
 }
